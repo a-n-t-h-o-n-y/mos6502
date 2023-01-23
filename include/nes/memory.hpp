@@ -1,7 +1,9 @@
 #ifndef NES_MEMORY_HPP
 #define NES_MEMORY_HPP
 #include <array>
-#include <cstdint>
+
+#include <nes/address.hpp>
+#include <nes/byte.hpp>
 
 namespace nes {
 
@@ -10,21 +12,31 @@ class Memory {
   Memory();
 
  public:
-  [[nodiscard]]  //
-  auto
-  read(std::uint16_t address) -> std::uint8_t;
+  [[nodiscard]]
+  auto read(
+    Address a
+  ) const -> Byte;
 
-  auto write(std::uint16_t address, std::uint8_t data) -> void;
+  auto write(
+    Address a,
+    Byte data
+  ) -> void;
 
  private:
-  auto get_memory_ref(std::uint16_t address) -> std::uint8_t&;
+  auto get_memory_ref(
+    Address a
+  ) -> Byte&;
+
+  auto get_memory_ref(
+    Address a
+  ) const -> Byte const&;
 
  private:
   // Memory regions
-  std::array<std::uint8_t, 0x800> ram_;   // 2KB  of RAM
-  std::array<std::uint8_t, 0x0008> ppu_;  // 8B   of PPU memory
-  std::array<std::uint8_t, 0x0020> apu_;  // 32B  of APU memory
-  std::array<std::uint8_t, 0xBFE0> rom_;  // 49KB of ROM memory
+  std::array<Byte, 0x800>  ram_;  // 2KB  of RAM
+  std::array<Byte, 0x0008> ppu_;  // 8B   of PPU memory
+  std::array<Byte, 0x0020> apu_;  // 32B  of APU memory
+  std::array<Byte, 0xBFE0> rom_;  // 49KB of ROM memory
 };
 
 }  // namespace nes
