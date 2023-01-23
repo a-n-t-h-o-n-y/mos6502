@@ -4,6 +4,7 @@ add_executable(nes_tests
   address_modes.test.cpp
   cpu.test.cpp
   instructions.test.cpp
+  opcodes.test.cpp
 )
 
 target_link_libraries(nes_tests PRIVATE
