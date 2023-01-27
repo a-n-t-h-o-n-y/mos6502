@@ -4,7 +4,6 @@ enable_testing()
 
 # Create mos6502 Library
 add_library(mos6502
-  src/addressing_modes.cpp
   src/cpu.cpp
   src/instructions.cpp
 )

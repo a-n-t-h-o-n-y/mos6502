@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <mos6502/byte_array.hpp>
 #include <mos6502/cpu.hpp>
 #include <mos6502/instructions.hpp>
 
@@ -147,7 +148,7 @@ TEST_CASE("SBC", "[instructions]")
   {
     cpu.AC = 0x9C;  // -100
     set_flag(cpu.SR, Flag::C, !false);
-    SBC(cpu, 0x64);          // 100
+    SBC(cpu, 0x64);           // 100
     REQUIRE(cpu.AC == 0x38);  // +56
     REQUIRE(get_flag(cpu.SR, Flag::C) == !false);
     REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
@@ -240,7 +241,7 @@ TEST_CASE("LDY", "[instructions]")
 TEST_CASE("STA", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   cpu.AC = 0x77;
   STA(cpu, mem, 0x0123);
@@ -250,7 +251,7 @@ TEST_CASE("STA", "[instructions]")
 TEST_CASE("STX", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   cpu.X = 0x77;
   STX(cpu, mem, 0x0123);
@@ -260,7 +261,7 @@ TEST_CASE("STX", "[instructions]")
 TEST_CASE("STY", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   cpu.Y = 0x77;
   STY(cpu, mem, 0x0123);
@@ -452,7 +453,7 @@ TEST_CASE("PHA", "[instructions]")
   constexpr Address STACK_TOP = 0x0100 + 0x00FF;
 
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   cpu.AC = 0x5A;
   PHA(cpu, mem);
@@ -466,7 +467,7 @@ TEST_CASE("PHP", "[instructions]")
   constexpr Address STACK_TOP = 0x0100 + 0x00FF;
 
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   set_flag(cpu.SR, Flag::C, true);
   set_flag(cpu.SR, Flag::I, true);
@@ -485,7 +486,6 @@ TEST_CASE("PHP", "[instructions]")
   REQUIRE(get_flag(pushed, Flag::N) == false);
   REQUIRE(get_flag(pushed, Flag::Z) == false);
 
-
   REQUIRE(cpu.SP == (0xFF - 1));
   REQUIRE(get_flag(cpu.SR, Flag::C) == true);
   REQUIRE(get_flag(cpu.SR, Flag::I) == true);
@@ -500,9 +500,10 @@ TEST_CASE("PHP", "[instructions]")
 TEST_CASE("PLA", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
-  SECTION("Positive") {
+  SECTION("Positive")
+  {
     cpu.AC = 0x5A;
     PHA(cpu, mem);
 
@@ -514,7 +515,8 @@ TEST_CASE("PLA", "[instructions]")
     REQUIRE(get_flag(cpu.SR, Flag::N) == false);
     REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
   }
-  SECTION("Negative") {
+  SECTION("Negative")
+  {
     cpu.AC = 0x8A;
     PHA(cpu, mem);
 
@@ -526,7 +528,8 @@ TEST_CASE("PLA", "[instructions]")
     REQUIRE(get_flag(cpu.SR, Flag::N) == true);
     REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
   }
-  SECTION("Zero") {
+  SECTION("Zero")
+  {
     cpu.AC = 0x00;
     PHA(cpu, mem);
 
@@ -545,7 +548,7 @@ TEST_CASE("PLP", "[instructions]")
   constexpr Address STACK_TOP = 0x0100 + 0x00FF;
 
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   set_flag(cpu.SR, Flag::C, true);
   set_flag(cpu.SR, Flag::I, true);
@@ -563,7 +566,6 @@ TEST_CASE("PLP", "[instructions]")
   REQUIRE(get_flag(pushed, Flag::D) == false);
   REQUIRE(get_flag(pushed, Flag::N) == false);
   REQUIRE(get_flag(pushed, Flag::Z) == false);
-
 
   REQUIRE(cpu.SP == (0xFF - 1));
   REQUIRE(get_flag(cpu.SR, Flag::C) == true);
@@ -592,7 +594,7 @@ TEST_CASE("PLP", "[instructions]")
 TEST_CASE("DEC", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
   auto adr = Address{0x0052};
 
   SECTION("Positive")
@@ -684,7 +686,7 @@ TEST_CASE("DEY", "[instructions]")
 TEST_CASE("INC", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
   auto adr = Address{0x0052};
 
   SECTION("Positive")
@@ -865,7 +867,8 @@ TEST_CASE("ASL", "[instructions]")
   auto cpu = CPU{};
   SECTION("Accumulator")
   {
-    SECTION("Positive") {
+    SECTION("Positive")
+    {
       cpu.AC = 0b00010001;
       ASL_ACC(cpu, cpu.AC);
       REQUIRE(cpu.AC == 0b00100010);
@@ -873,21 +876,24 @@ TEST_CASE("ASL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Negative") {
+    SECTION("Negative")
+    {
       ASL_ACC(cpu, 0b01010001);
       REQUIRE(cpu.AC == 0b10100010);
       REQUIRE(get_flag(cpu.SR, Flag::C) == false);
       REQUIRE(get_flag(cpu.SR, Flag::N) == true);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Zero") {
+    SECTION("Zero")
+    {
       ASL_ACC(cpu, 0b00000000);
       REQUIRE(cpu.AC == 0b00000000);
       REQUIRE(get_flag(cpu.SR, Flag::C) == false);
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == true);
     }
-    SECTION("Carry") {
+    SECTION("Carry")
+    {
       cpu.AC = 0b10000010;
       ASL_ACC(cpu, cpu.AC);
       REQUIRE(cpu.AC == 0b00000100);
@@ -898,10 +904,11 @@ TEST_CASE("ASL", "[instructions]")
   }
   SECTION("Memory")
   {
-    auto mem       = Memory{};
+    auto mem       = ByteArray{};
     auto const adr = Address{0x0123};
 
-    SECTION("Positive") {
+    SECTION("Positive")
+    {
       mem.write(adr, 0b00010001);
       ASL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00100010);
@@ -909,7 +916,8 @@ TEST_CASE("ASL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Negative") {
+    SECTION("Negative")
+    {
       mem.write(adr, 0b01010001);
       ASL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b10100010);
@@ -917,7 +925,8 @@ TEST_CASE("ASL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == true);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Zero") {
+    SECTION("Zero")
+    {
       mem.write(adr, 0b00000000);
       ASL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00000000);
@@ -925,7 +934,8 @@ TEST_CASE("ASL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == true);
     }
-    SECTION("Carry") {
+    SECTION("Carry")
+    {
       mem.write(adr, 0b10000010);
       ASL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00000100);
@@ -941,14 +951,16 @@ TEST_CASE("LSR", "[instructions]")
   auto cpu = CPU{};
   SECTION("Accumulator")
   {
-    SECTION("Positive") {
+    SECTION("Positive")
+    {
       LSR_ACC(cpu, 0b00010010);
       REQUIRE(cpu.AC == 0b00001001);
       REQUIRE(get_flag(cpu.SR, Flag::C) == false);
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Zero") {
+    SECTION("Zero")
+    {
       cpu.AC = 0b00000000;
       LSR_ACC(cpu, cpu.AC);
       REQUIRE(cpu.AC == 0b00000000);
@@ -956,7 +968,8 @@ TEST_CASE("LSR", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == true);
     }
-    SECTION("Carry") {
+    SECTION("Carry")
+    {
       LSR_ACC(cpu, 0b10000001);
       REQUIRE(cpu.AC == 0b01000000);
       REQUIRE(get_flag(cpu.SR, Flag::C) == true);
@@ -966,10 +979,11 @@ TEST_CASE("LSR", "[instructions]")
   }
   SECTION("Memory")
   {
-    auto mem       = Memory{};
+    auto mem       = ByteArray{};
     auto const adr = Address{0x0123};
 
-    SECTION("Positive") {
+    SECTION("Positive")
+    {
       mem.write(adr, 0b00010010);
       LSR_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00001001);
@@ -977,7 +991,8 @@ TEST_CASE("LSR", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Zero") {
+    SECTION("Zero")
+    {
       mem.write(adr, 0b00000000);
       LSR_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00000000);
@@ -985,7 +1000,8 @@ TEST_CASE("LSR", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == true);
     }
-    SECTION("Carry") {
+    SECTION("Carry")
+    {
       mem.write(adr, 0b10000001);
       LSR_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b01000000);
@@ -1001,14 +1017,16 @@ TEST_CASE("ROL", "[instructions]")
   auto cpu = CPU{};
   SECTION("Accumulator")
   {
-    SECTION("No Carry") {
+    SECTION("No Carry")
+    {
       ROL_ACC(cpu, 0b00010010);
       REQUIRE(cpu.AC == 0b00100100);
       REQUIRE(get_flag(cpu.SR, Flag::C) == false);
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Initial Carry Set") {
+    SECTION("Initial Carry Set")
+    {
       set_flag(cpu.SR, Flag::C, true);
       ROL_ACC(cpu, 0b00100000);
       REQUIRE(cpu.AC == 0b01000001);
@@ -1016,14 +1034,16 @@ TEST_CASE("ROL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Negative") {
+    SECTION("Negative")
+    {
       ROL_ACC(cpu, 0b01000001);
       REQUIRE(cpu.AC == 0b10000010);
       REQUIRE(get_flag(cpu.SR, Flag::C) == false);
       REQUIRE(get_flag(cpu.SR, Flag::N) == true);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Carry and Zero Are Set") {
+    SECTION("Carry and Zero Are Set")
+    {
       cpu.AC = 0b10000000;
       ROL_ACC(cpu, cpu.AC);
       REQUIRE(cpu.AC == 0b00000000);
@@ -1034,10 +1054,11 @@ TEST_CASE("ROL", "[instructions]")
   }
   SECTION("Memory")
   {
-    auto mem       = Memory{};
+    auto mem       = ByteArray{};
     auto const adr = Address{0x0123};
 
-    SECTION("No Carry") {
+    SECTION("No Carry")
+    {
       mem.write(adr, 0b00010010);
       ROL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00100100);
@@ -1045,7 +1066,8 @@ TEST_CASE("ROL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Initial Carry Set") {
+    SECTION("Initial Carry Set")
+    {
       set_flag(cpu.SR, Flag::C, true);
       mem.write(adr, 0b00100000);
       ROL_MEM(cpu, mem, adr);
@@ -1054,7 +1076,8 @@ TEST_CASE("ROL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Negative") {
+    SECTION("Negative")
+    {
       mem.write(adr, 0b01000001);
       ROL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b10000010);
@@ -1062,7 +1085,8 @@ TEST_CASE("ROL", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == true);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Carry and Zero Are Set") {
+    SECTION("Carry and Zero Are Set")
+    {
       mem.write(adr, 0b10000000);
       ROL_MEM(cpu, mem, adr);
       REQUIRE(mem.read(adr) == 0b00000000);
@@ -1078,7 +1102,8 @@ TEST_CASE("ROR", "[instructions]")
   auto cpu = CPU{};
   SECTION("Accumulator")
   {
-    SECTION("No Carry") {
+    SECTION("No Carry")
+    {
       cpu.AC = 0b00010010;
       ROR_ACC(cpu, cpu.AC);
       REQUIRE(cpu.AC == 0b00001001);
@@ -1086,7 +1111,8 @@ TEST_CASE("ROR", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == false);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Initial Carry Set") {
+    SECTION("Initial Carry Set")
+    {
       set_flag(cpu.SR, Flag::C, true);
       ROR_ACC(cpu, 0b00100000);
       REQUIRE(cpu.AC == 0b10010000);
@@ -1094,7 +1120,8 @@ TEST_CASE("ROR", "[instructions]")
       REQUIRE(get_flag(cpu.SR, Flag::N) == true);
       REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
     }
-    SECTION("Carry and Zero Are Set") {
+    SECTION("Carry and Zero Are Set")
+    {
       ROR_ACC(cpu, 0b00000001);
       REQUIRE(cpu.AC == 0b00000000);
       REQUIRE(get_flag(cpu.SR, Flag::C) == true);
@@ -1104,7 +1131,7 @@ TEST_CASE("ROR", "[instructions]")
   }
   SECTION("Memory")
   {
-    auto mem       = Memory{};
+    auto mem       = ByteArray{};
     auto const adr = Address{0x0123};
 
     SECTION("No Carry")
@@ -1570,7 +1597,7 @@ TEST_CASE("JSR + RTS", "[instructions]")
   auto const TARGET = Address{0xFADE};
 
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
   cpu.PC   = 0x1234;
 
   REQUIRE(cpu.SP == 0xFF);
@@ -1586,7 +1613,7 @@ TEST_CASE("JSR + RTS", "[instructions]")
 TEST_CASE("BRK + RTI", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   cpu.PC = 0x1002;
   cpu.SP = 0xFF;
@@ -1625,7 +1652,7 @@ TEST_CASE("BRK + RTI", "[instructions]")
 TEST_CASE("BIT", "[instructions]")
 {
   auto cpu = CPU{};
-  cpu.AC = 0x01;
+  cpu.AC   = 0x01;
   BIT(cpu, 0b01010101);
   REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
   REQUIRE(get_flag(cpu.SR, Flag::V) == true);
@@ -1635,7 +1662,7 @@ TEST_CASE("BIT", "[instructions]")
 TEST_CASE("IRQ", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   SECTION("NOP if Flag::I is set")
   {
@@ -1689,7 +1716,7 @@ TEST_CASE("IRQ", "[instructions]")
 TEST_CASE("NMI", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   SECTION("Interrupt regardless of Flag::I")
   {
@@ -1724,7 +1751,7 @@ TEST_CASE("NMI", "[instructions]")
 TEST_CASE("reset", "[instructions]")
 {
   auto cpu = CPU{};
-  auto mem = Memory{};
+  auto mem = ByteArray{};
 
   mem.write(0xFFFC, 0x34);
   mem.write(0xFFFD, 0x12);

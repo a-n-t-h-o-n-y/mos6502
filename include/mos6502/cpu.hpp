@@ -50,11 +50,5 @@ struct CPU {
   Address PC = 0x0000;
 };
 
-/// Executes the opcode at mem.read(cpu.PC). Returns number of cycles used.
-auto execute_next_opcode(
-  CPU& cpu,
-  Memory& mem
-) -> int;
-
 }  // namespace mos6502
 #endif  // MOS6502_CPU_HPP

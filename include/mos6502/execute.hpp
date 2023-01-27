@@ -1,9 +1,34 @@
-#ifndef MOS6502_TIMED_EXECUTE_HPP
-#define MOS6502_TIMED_EXECUTE_HPP
+#ifndef MOS6502_EXECUTE_HPP
+#define MOS6502_EXECUTE_HPP
 #include <thread>
 #include <chrono>
 
+#include <mos6502/cpu.hpp>
+#include <mos6502/memory.hpp>
+#include <mos6502/opcodes.hpp>
+
 namespace mos6502 {
+
+/// Return the opcode at cpu.PC and increment cpu.PC.
+[[nodiscard]]
+auto read_opcode(
+  CPU& cpu,
+  Memory auto& mem
+) -> Byte
+{
+  return mem.read(cpu.PC++);
+}
+
+/// Executes the opcode at mem.read(cpu.PC). Returns number of cycles used.
+template <Memory M>
+auto execute_next_opcode(
+  OpTable<M> const& table,
+  CPU& cpu,
+  Memory auto& mem
+) -> int
+{
+  return table[read_opcode(cpu, mem)](cpu, mem);
+}
 
 /// Calls code_block(); at a frequency of HZ in loop. Fn signature is bool fn();
 /** If code_block returns true, this function will return. */
@@ -27,4 +52,4 @@ auto timed_execute(
 }
 
 }  // namespace mos6502
-#endif  // MOS6502_TIMED_EXECUTE_HPP
+#endif //MOS6502_EXECUTE_HPP

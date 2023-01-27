@@ -1,14 +1,17 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <mos6502/byte_array.hpp>
 #include <mos6502/cpu.hpp>
 #include <mos6502/opcodes.hpp>
 
 using namespace mos6502;
 
+constexpr auto opcode_table = create_opcode_table<ByteArray>();
+
 TEST_CASE("ADC", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x69](cpu, memory);
   opcode_table[0x65](cpu, memory);
@@ -23,7 +26,7 @@ TEST_CASE("ADC", "[opcodes]")
 TEST_CASE("SBC", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xE9](cpu, memory);
   opcode_table[0xE5](cpu, memory);
@@ -38,7 +41,7 @@ TEST_CASE("SBC", "[opcodes]")
 TEST_CASE("LDA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xA9](cpu, memory);
   opcode_table[0xA5](cpu, memory);
@@ -53,7 +56,7 @@ TEST_CASE("LDA", "[opcodes]")
 TEST_CASE("LDX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xA2](cpu, memory);
   opcode_table[0xA6](cpu, memory);
@@ -65,7 +68,7 @@ TEST_CASE("LDX", "[opcodes]")
 TEST_CASE("LDY", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xA0](cpu, memory);
   opcode_table[0xA4](cpu, memory);
@@ -77,7 +80,7 @@ TEST_CASE("LDY", "[opcodes]")
 TEST_CASE("STA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   // TODO require return value to be cycles.. except for variable ones...?
   opcode_table[0x85](cpu, memory);
@@ -92,7 +95,7 @@ TEST_CASE("STA", "[opcodes]")
 TEST_CASE("STX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x86](cpu, memory);
   opcode_table[0x96](cpu, memory);
@@ -102,7 +105,7 @@ TEST_CASE("STX", "[opcodes]")
 TEST_CASE("STY", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x84](cpu, memory);
   opcode_table[0x94](cpu, memory);
@@ -112,7 +115,7 @@ TEST_CASE("STY", "[opcodes]")
 TEST_CASE("TAX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xAA](cpu, memory);
 }
@@ -120,7 +123,7 @@ TEST_CASE("TAX", "[opcodes]")
 TEST_CASE("TAY", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xA8](cpu, memory);
 }
@@ -128,7 +131,7 @@ TEST_CASE("TAY", "[opcodes]")
 TEST_CASE("TSX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xBA](cpu, memory);
 }
@@ -136,7 +139,7 @@ TEST_CASE("TSX", "[opcodes]")
 TEST_CASE("TXA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x8A](cpu, memory);
 }
@@ -144,7 +147,7 @@ TEST_CASE("TXA", "[opcodes]")
 TEST_CASE("TXS", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x9A](cpu, memory);
 }
@@ -152,7 +155,7 @@ TEST_CASE("TXS", "[opcodes]")
 TEST_CASE("TYA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x98](cpu, memory);
 }
@@ -160,7 +163,7 @@ TEST_CASE("TYA", "[opcodes]")
 TEST_CASE("PHA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x48](cpu, memory);
 }
@@ -168,7 +171,7 @@ TEST_CASE("PHA", "[opcodes]")
 TEST_CASE("PHP", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x08](cpu, memory);
 }
@@ -176,7 +179,7 @@ TEST_CASE("PHP", "[opcodes]")
 TEST_CASE("PLA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x68](cpu, memory);
 }
@@ -184,7 +187,7 @@ TEST_CASE("PLA", "[opcodes]")
 TEST_CASE("PLP", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x28](cpu, memory);
 }
@@ -192,7 +195,7 @@ TEST_CASE("PLP", "[opcodes]")
 TEST_CASE("DEC", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xC6](cpu, memory);
   opcode_table[0xD6](cpu, memory);
@@ -203,7 +206,7 @@ TEST_CASE("DEC", "[opcodes]")
 TEST_CASE("DEX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xCA](cpu, memory);
 }
@@ -211,7 +214,7 @@ TEST_CASE("DEX", "[opcodes]")
 TEST_CASE("DEY", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x88](cpu, memory);
 }
@@ -219,7 +222,7 @@ TEST_CASE("DEY", "[opcodes]")
 TEST_CASE("INC", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xE6](cpu, memory);
   opcode_table[0xF6](cpu, memory);
@@ -230,7 +233,7 @@ TEST_CASE("INC", "[opcodes]")
 TEST_CASE("INX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xE8](cpu, memory);
 }
@@ -238,7 +241,7 @@ TEST_CASE("INX", "[opcodes]")
 TEST_CASE("INY", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xC8](cpu, memory);
 }
@@ -246,7 +249,7 @@ TEST_CASE("INY", "[opcodes]")
 TEST_CASE("AND", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x29](cpu, memory);
   opcode_table[0x25](cpu, memory);
@@ -261,7 +264,7 @@ TEST_CASE("AND", "[opcodes]")
 TEST_CASE("EOR", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x49](cpu, memory);
   opcode_table[0x45](cpu, memory);
@@ -276,7 +279,7 @@ TEST_CASE("EOR", "[opcodes]")
 TEST_CASE("ORA", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x09](cpu, memory);
   opcode_table[0x05](cpu, memory);
@@ -291,7 +294,7 @@ TEST_CASE("ORA", "[opcodes]")
 TEST_CASE("ASL", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x0A](cpu, memory);
   opcode_table[0x06](cpu, memory);
@@ -303,7 +306,7 @@ TEST_CASE("ASL", "[opcodes]")
 TEST_CASE("LSR", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x4A](cpu, memory);
   opcode_table[0x46](cpu, memory);
@@ -315,7 +318,7 @@ TEST_CASE("LSR", "[opcodes]")
 TEST_CASE("ROL", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x2A](cpu, memory);
   opcode_table[0x26](cpu, memory);
@@ -327,7 +330,7 @@ TEST_CASE("ROL", "[opcodes]")
 TEST_CASE("ROR", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x6A](cpu, memory);
   opcode_table[0x66](cpu, memory);
@@ -339,7 +342,7 @@ TEST_CASE("ROR", "[opcodes]")
 TEST_CASE("Flag Instructions", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x18](cpu, memory);
   opcode_table[0xD8](cpu, memory);
@@ -353,7 +356,7 @@ TEST_CASE("Flag Instructions", "[opcodes]")
 TEST_CASE("CMP", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xC9](cpu, memory);
   opcode_table[0xC5](cpu, memory);
@@ -368,7 +371,7 @@ TEST_CASE("CMP", "[opcodes]")
 TEST_CASE("CPX", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xE0](cpu, memory);
   opcode_table[0xE4](cpu, memory);
@@ -378,7 +381,7 @@ TEST_CASE("CPX", "[opcodes]")
 TEST_CASE("CPY", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xC0](cpu, memory);
   opcode_table[0xC4](cpu, memory);
@@ -388,7 +391,7 @@ TEST_CASE("CPY", "[opcodes]")
 TEST_CASE("Conditional Branches", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x90](cpu, memory);
   opcode_table[0xB0](cpu, memory);
@@ -403,7 +406,7 @@ TEST_CASE("Conditional Branches", "[opcodes]")
 TEST_CASE("Jumps + Subroutines", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x4C](cpu, memory);
   opcode_table[0x6C](cpu, memory);
@@ -414,7 +417,7 @@ TEST_CASE("Jumps + Subroutines", "[opcodes]")
 TEST_CASE("BRK + RTI", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x00](cpu, memory);
   opcode_table[0x40](cpu, memory);
@@ -423,7 +426,7 @@ TEST_CASE("BRK + RTI", "[opcodes]")
 TEST_CASE("BIT", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0x24](cpu, memory);
   opcode_table[0x2C](cpu, memory);
@@ -432,7 +435,7 @@ TEST_CASE("BIT", "[opcodes]")
 TEST_CASE("NOP", "[opcodes]")
 {
   auto cpu    = CPU{};
-  auto memory = Memory{};
+  auto memory = ByteArray{};
 
   opcode_table[0xEA](cpu, memory);
 }
