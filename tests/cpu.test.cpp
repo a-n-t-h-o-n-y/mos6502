@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <nes/cpu.hpp>
+#include <mos6502/cpu.hpp>
 
-using namespace nes;
+using namespace mos6502;
 
 TEST_CASE("Set and Get Status Register Flags", "[cpu]")
 {
@@ -54,24 +54,4 @@ TEST_CASE("Set and Get Status Register Flags", "[cpu]")
   set_flag(cpu.SR, Flag::N, false);
   REQUIRE(get_flag(cpu.SR, Flag::N) == false);
 
-}
-
-// TODO remove
-// #include <nes/memory.hpp>
-// #include <nes/timed_execute.hpp>
-
-// TODO remove
-TEST_CASE("Foo", "[wow]") {
-  // auto cpu = CPU{};
-  // auto mem = Memory{};
-  // mem.write(0x0000, 0x42);
-
-  // timed_execute<1'789'773>([]{return false;});
-
-  // execute_next_opcode(cpu, mem);
-  // execute_next_opcode(cpu, mem);
-  // execute_next_opcode(cpu, mem);
-  // execute_next_opcode(cpu, mem);
-  // execute_next_opcode(cpu, mem);
-  // execute_next_opcode(cpu, mem);
 }

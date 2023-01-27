@@ -1,10 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <nes/cpu.hpp>
-#include <nes/instructions.hpp>
-#include <nes/memory.hpp>
+#include <mos6502/cpu.hpp>
+#include <mos6502/instructions.hpp>
 
-using namespace nes;
+using namespace mos6502;
 
 TEST_CASE("ADC", "[instructions]")
 {

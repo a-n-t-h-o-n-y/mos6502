@@ -1,6 +1,6 @@
 # Add Unit Test Executable
 add_executable(mos6502_tests
-  address_modes.test.cpp
+  addressing_modes.test.cpp
   cpu.test.cpp
   instructions.test.cpp
   opcodes.test.cpp

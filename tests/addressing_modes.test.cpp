@@ -1,15 +1,14 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <nes/address.hpp>
-#include <nes/address_modes.hpp>
-#include <nes/cpu.hpp>
-#include <nes/memory.hpp>
+#include <mos6502/address.hpp>
+#include <mos6502/addressing_modes.hpp>
+#include <mos6502/cpu.hpp>
 
-using namespace nes;
+using namespace mos6502;
 
-TEST_CASE("Implied", "[address_modes]") { IMP(); }
+TEST_CASE("Implied", "[addressing_modes]") { IMP(); }
 
-TEST_CASE("Accumulator", "[address_modes]")
+TEST_CASE("Accumulator", "[addressing_modes]")
 {
   auto cpu = CPU{};
   cpu.PC   = 0x0000;
@@ -23,7 +22,7 @@ TEST_CASE("Accumulator", "[address_modes]")
   REQUIRE(cpu.PC == 0x0000);
 }
 
-TEST_CASE("Absolute", "[address_modes]")
+TEST_CASE("Absolute", "[addressing_modes]")
 {
   auto cpu    = CPU{};
   auto memory = Memory{};
@@ -36,7 +35,7 @@ TEST_CASE("Absolute", "[address_modes]")
   REQUIRE(cpu.PC == 0x0025);
 }
 
-TEST_CASE("Absolute, X-indexed", "[address_modes]")
+TEST_CASE("Absolute, X-indexed", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -62,7 +61,7 @@ TEST_CASE("Absolute, X-indexed", "[address_modes]")
   }
 }
 
-TEST_CASE("Absolute, Y-indexed", "[address_modes]")
+TEST_CASE("Absolute, Y-indexed", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -88,7 +87,7 @@ TEST_CASE("Absolute, Y-indexed", "[address_modes]")
   }
 }
 
-TEST_CASE("Immediate", "[address_modes]")
+TEST_CASE("Immediate", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -98,7 +97,7 @@ TEST_CASE("Immediate", "[address_modes]")
   REQUIRE(cpu.PC == 0x0024);
 }
 
-TEST_CASE("Indirect", "[address_modes]")
+TEST_CASE("Indirect", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -128,7 +127,7 @@ TEST_CASE("Indirect", "[address_modes]")
   }
 }
 
-TEST_CASE("Indirect - X Indexed", "[address_modes]")
+TEST_CASE("Indirect - X Indexed", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -144,7 +143,7 @@ TEST_CASE("Indirect - X Indexed", "[address_modes]")
   REQUIRE(cpu.PC == 0x0824);
 }
 
-TEST_CASE("Indirect - Y Indexed", "[address_modes]")
+TEST_CASE("Indirect - Y Indexed", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -175,7 +174,7 @@ TEST_CASE("Indirect - Y Indexed", "[address_modes]")
   }
 }
 
-TEST_CASE("Relative", "[address_modes]")
+TEST_CASE("Relative", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -206,18 +205,18 @@ TEST_CASE("Relative", "[address_modes]")
   }
 }
 
-TEST_CASE("Zero Page", "[address_modes]")
+TEST_CASE("Zero Page", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
 
   cpu.PC = 0x0123;
   memory.write(cpu.PC, 0x5F);
-  REQUIRE(nes::ZP0(cpu, memory) == 0x005F);
+  REQUIRE(ZP0(cpu, memory) == 0x005F);
   REQUIRE(cpu.PC == 0x0124);
 }
 
-TEST_CASE("Zero Page - X Indexed", "[address_modes]")
+TEST_CASE("Zero Page - X Indexed", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -227,7 +226,7 @@ TEST_CASE("Zero Page - X Indexed", "[address_modes]")
     cpu.X  = 0x10;
     cpu.PC = 0x0123;
     memory.write(cpu.PC, 0x5F);
-    REQUIRE(nes::ZPX(cpu, memory) == 0x006F);
+    REQUIRE(ZPX(cpu, memory) == 0x006F);
     REQUIRE(cpu.PC == 0x0124);
   }
   SECTION("With Carry, Which Is Zeroed")
@@ -235,12 +234,12 @@ TEST_CASE("Zero Page - X Indexed", "[address_modes]")
     cpu.X  = 0xFF;
     cpu.PC = 0x0123;
     memory.write(cpu.PC, 0x5F);
-    REQUIRE(nes::ZPX(cpu, memory) == 0x005E);
+    REQUIRE(ZPX(cpu, memory) == 0x005E);
     REQUIRE(cpu.PC == 0x0124);
   }
 }
 
-TEST_CASE("Zero Page - Y Indexed", "[address_modes]")
+TEST_CASE("Zero Page - Y Indexed", "[addressing_modes]")
 {
   auto memory = Memory{};
   auto cpu    = CPU{};
@@ -250,7 +249,7 @@ TEST_CASE("Zero Page - Y Indexed", "[address_modes]")
     cpu.Y  = 0x10;
     cpu.PC = 0x0123;
     memory.write(cpu.PC, 0x5F);
-    REQUIRE(nes::ZPY(cpu, memory) == 0x006F);
+    REQUIRE(ZPY(cpu, memory) == 0x006F);
     REQUIRE(cpu.PC == 0x0124);
   }
   SECTION("With Carry, Which Is Zeroed")
@@ -258,7 +257,7 @@ TEST_CASE("Zero Page - Y Indexed", "[address_modes]")
     cpu.Y  = 0xFF;
     cpu.PC = 0x0123;
     memory.write(cpu.PC, 0x5F);
-    REQUIRE(nes::ZPY(cpu, memory) == 0x005E);
+    REQUIRE(ZPY(cpu, memory) == 0x005E);
     REQUIRE(cpu.PC == 0x0124);
   }
 }

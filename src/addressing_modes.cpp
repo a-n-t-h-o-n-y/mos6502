@@ -1,4 +1,4 @@
-#include <mos6502/address_modes.hpp>
+#include <mos6502/addressing_modes.hpp>
 
 #include <cstdint>
 #include <utility>
