@@ -1,17 +1,16 @@
-#ifndef NES_ADDRESS_MODES_HPP
-#define NES_ADDRESS_MODES_HPP
+#ifndef MOS6502_ADDRESSING_MODES_HPP
+#define MOS6502_ADDRESSING_MODES_HPP
 #include <utility>
 
-#include <nes/address.hpp>
-#include <nes/byte.hpp>
-#include <nes/cpu.hpp>
-#include <nes/memory.hpp>
+#include <mos6502/address.hpp>
+#include <mos6502/byte.hpp>
+#include <mos6502/cpu.hpp>
 
-namespace nes {
+namespace mos6502 {
 
 /// Implied
 inline
-auto IMP() -> void { return; }
+auto IMP() -> void {}
 
 /// Accumulator - Returns Byte
 [[nodiscard]]
@@ -26,14 +25,14 @@ auto ABS(
   Memory const& memory
 ) -> Address;
 
-/// Absolute - X Indexed - Returns {PageCrossed? bool, Address}
+/// Absolute - X Indexed - Returns {PageCrossed?, Address}
 [[nodiscard]]
 auto ABX(
   CPU& cpu,
   Memory const& memory
 ) -> std::pair<bool, Address>;
 
-/// Absolute - Y Indexed - Returns {PageCrossed? bool, Address}
+/// Absolute - Y Indexed - Returns {PageCrossed?, Address}
 [[nodiscard]]
 auto ABY(
   CPU& cpu,
@@ -61,7 +60,7 @@ auto IZX(
   Memory const& memory
 ) -> Address;
 
-/// Indirect - Y Indexed
+/// Indirect - Y Indexed - Returns {PageCrossed?, Address}
 [[nodiscard]]
 auto IZY(
   CPU& cpu,
@@ -96,5 +95,5 @@ auto ZPY(
   Memory const& memory
 ) -> Address;
 
-}  // namespace nes
-#endif  // NES_ADDRESS_MODES_HPP
+}  // namespace mos6502
+#endif  // MOS6502_ADDRESSING_MODES_HPP

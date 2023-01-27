@@ -1,13 +1,14 @@
-#include <nes/address_modes.hpp>
+#include <mos6502/address_modes.hpp>
 
 #include <cstdint>
 #include <utility>
 
-#include <nes/address.hpp>
-#include <nes/byte.hpp>
+#include <mos6502/address.hpp>
+#include <mos6502/byte.hpp>
+#include <mos6502/cpu.hpp>
 
 namespace {
-using namespace nes;
+using namespace mos6502;
 
 auto abs_indexed(
   CPU& cpu,
@@ -33,7 +34,7 @@ auto sign_extend(Byte b) -> Address
 
 }  // namespace
 
-namespace nes {
+namespace mos6502 {
 
 auto ACC(
   CPU const& cpu
@@ -91,9 +92,9 @@ auto IZX(
   Memory const& memory
 ) -> Address
 {
-  Address const zp = memory.read(cpu.PC++);
-  Address const lo = memory.read(zp + cpu.X);
-  Address const hi = memory.read(zp + cpu.X + 1);
+  Address const adr = memory.read(cpu.PC++) + cpu.X;
+  Address const lo  = memory.read(adr);
+  Address const hi  = memory.read(adr + 1);
   return (hi << 8) | lo;
 }
 
@@ -102,14 +103,14 @@ auto IZY(
   Memory const& memory
 ) -> std::pair<bool, Address>
 {
-  Address const zp     = memory.read(cpu.PC++);
-  Address const lo     = memory.read(zp);
-  Address const hi     = memory.read(zp + 1);
-  Address const result = ((hi << 8) | lo) + cpu.Y;
-  if ((hi << 8) != (result & 0xFF00))
-    return {true, result};
+  Address const zp = memory.read(cpu.PC++);
+  Address const lo = memory.read(zp);
+  Address const hi = memory.read(zp + 1);
+  Address const r  = static_cast<Address>(((hi << 8) | lo) + cpu.Y);
+  if ((hi << 8) != (r & 0xFF00))
+    return {true, r};
   else
-    return {false, result};
+    return {false, r};
 }
 
 auto REL(
@@ -145,4 +146,4 @@ auto ZPY(
   return (memory.read(cpu.PC++) + cpu.Y) & 0x00FF;
 }
 
-}  // namespace nes
+}  // namespace mos6502

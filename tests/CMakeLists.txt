@@ -1,16 +1,15 @@
 # Add Unit Test Executable
-add_executable(nes_tests
-  memory.test.cpp
+add_executable(mos6502_tests
   address_modes.test.cpp
   cpu.test.cpp
   instructions.test.cpp
   opcodes.test.cpp
 )
 
-target_link_libraries(nes_tests PRIVATE
+target_link_libraries(mos6502_tests PRIVATE
   Catch2::Catch2
   Catch2::Catch2WithMain
-  neslib
+  mos6502
 )
 
-add_test(NAME nes_tests COMMAND nes_tests)
+add_test(NAME mos6502_tests COMMAND mos6502_tests)
