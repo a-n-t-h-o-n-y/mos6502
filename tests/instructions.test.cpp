@@ -155,6 +155,57 @@ TEST_CASE("SBC", "[instructions]")
     REQUIRE(get_flag(cpu.SR, Flag::V) == true);
     REQUIRE(get_flag(cpu.SR, Flag::N) == false);
   }
+  SECTION("Decimal Mode") {
+    set_flag(cpu.SR, Flag::D, true);
+    // ac - m, if m is larger than ac, then you have a negative result
+    cpu.AC = 0x46;
+    set_flag(cpu.SR, Flag::C, !false);
+    SBC(cpu, 0x12);
+    REQUIRE(cpu.AC == 0x34);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == true);
+
+    cpu.AC = 0x40;
+    set_flag(cpu.SR, Flag::C, !false);
+    SBC(cpu, 0x13);
+    REQUIRE(cpu.AC == 0x27);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == true);
+
+    cpu.AC = 0x32;
+    set_flag(cpu.SR, Flag::C, false);
+    SBC(cpu, 0x02);
+    REQUIRE(cpu.AC == 0x29);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == true);
+
+    cpu.AC = 0x12;
+    set_flag(cpu.SR, Flag::C, !false);
+    SBC(cpu, 0x21);
+    REQUIRE(cpu.AC == 0x91);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == false);
+
+    cpu.AC = 0x21;
+    set_flag(cpu.SR, Flag::C, !false);
+    SBC(cpu, 0x34);
+    REQUIRE(cpu.AC == 0x87);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == false);
+
+    cpu.AC = 0x00;
+    set_flag(cpu.SR, Flag::C, !false);
+    SBC(cpu, 0x01);
+    REQUIRE(cpu.AC == 0x99);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == false);
+
+    cpu.AC = 0x00;
+    set_flag(cpu.SR, Flag::C, !false);
+    SBC(cpu, 0x00);
+    REQUIRE(cpu.AC == 0x00);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == true);
+
+    cpu.AC = 0x00;
+    set_flag(cpu.SR, Flag::C, !true);
+    SBC(cpu, 0x00);
+    REQUIRE(cpu.AC == 0x99);
+    REQUIRE(get_flag(cpu.SR, Flag::C) == false);
+  }
 }
 
 TEST_CASE("LDA", "[instructions]")
@@ -392,29 +443,24 @@ TEST_CASE("TXS", "[instructions]")
 {
   auto cpu = CPU{};
 
+  // TXS does not set flags.
   SECTION("Positive")
   {
     cpu.X = 0x05;
     TXS(cpu);
     REQUIRE(cpu.SP == 0x05);
-    REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
-    REQUIRE(get_flag(cpu.SR, Flag::N) == false);
   }
   SECTION("Negative")
   {
     cpu.X = 0xFF;
     TXS(cpu);
     REQUIRE(cpu.SP == 0xFF);
-    REQUIRE(get_flag(cpu.SR, Flag::Z) == false);
-    REQUIRE(get_flag(cpu.SR, Flag::N) == true);
   }
   SECTION("Zero")
   {
     cpu.X = 0x00;
     TXS(cpu);
     REQUIRE(cpu.SP == 0x00);
-    REQUIRE(get_flag(cpu.SR, Flag::Z) == true);
-    REQUIRE(get_flag(cpu.SR, Flag::N) == false);
   }
 }
 

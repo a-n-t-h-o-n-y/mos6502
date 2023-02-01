@@ -1,5 +1,6 @@
 #include <mos6502/instructions.hpp>
 
+#include <mos6502/detail/bcd.hpp>
 #include <mos6502/detail/instruction_helpers.hpp>
 #include <mos6502/memory.hpp>
 #include <mos6502/word.hpp>
@@ -11,30 +12,19 @@ auto ADC(
   Byte value
 ) -> void
 {
-  Word const r = static_cast<Word>(
-    cpu.AC + value + static_cast<Word>(get_flag(cpu.SR, Flag::C))
-  );
+  if (get_flag(cpu.SR, Flag::D)) {
+    value  = detail::BCD_to_BIN(value);
+    cpu.AC = detail::BCD_to_BIN(cpu.AC);
 
-  // Carry Flag
-  detail::set_flag_C(cpu, r);
+    auto const ac    = cpu.AC;
+    auto const carry = get_flag(cpu.SR, Flag::C) ? 1 : 0;
+    detail::ADC_BIN(cpu, value);
 
-  // Zero Flag
-  detail::set_flag_Z(cpu, static_cast<Byte>(r));
-
-  // Signed Overflow Flag
-  set_flag(
-    cpu.SR,
-    Flag::V,
-    static_cast<bool>((
-      ~(static_cast<Word>(cpu.AC) ^ static_cast<Word>(value)) &
-       (static_cast<Word>(cpu.AC) ^ static_cast<Word>(r))
-    ) & 0x0080)
-  );
-
-  // Negative Flag
-  detail::set_flag_N(cpu, static_cast<Byte>(r));
-
-  cpu.AC = static_cast<Byte>(r);
+    set_flag(cpu.SR, Flag::C, (value + carry + ac) > 99);
+    cpu.AC = detail::BIN_to_BCD(cpu.AC);
+  } else {
+    detail::ADC_BIN(cpu, value);
+  }
 }
 
 auto SBC(
@@ -42,9 +32,28 @@ auto SBC(
   Byte value
 ) -> void
 {
-  // A + (flip_sign(M) - 1) + C
-  // A + flip_bits(M) + C
-  ADC(cpu, ~value);
+  if (get_flag(cpu.SR, Flag::D)) {
+    value  = detail::BCD_to_BIN(value);
+    cpu.AC = detail::BCD_to_BIN(cpu.AC);
+
+    auto const ac    = cpu.AC;
+    auto const carry = get_flag(cpu.SR, Flag::C) ? 1 : 0;
+
+    detail::ADC_BIN(cpu, ~value);
+    // If result is negative
+    if (cpu.AC & (0x01 << 7)) {
+      cpu.AC += 100;
+    }
+    cpu.AC = detail::BIN_to_BCD(cpu.AC);
+
+    // Set carry if result is zero or positive
+    set_flag(cpu.SR, Flag::C, (ac - (carry ? 0 : 1) - value) >= 0);
+
+  } else {
+    // A + (flip_sign(M) - 1) + C
+    // A + flip_bits(M) + C
+    detail::ADC_BIN(cpu, ~value);
+  }
 }
 
 auto LDA(
@@ -118,8 +127,6 @@ auto TXS(
 ) -> void
 {
   cpu.SP = cpu.X;
-  detail::set_flag_N(cpu, cpu.SP);
-  detail::set_flag_Z(cpu, cpu.SP);
 }
 
 auto TYA(

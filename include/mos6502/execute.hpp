@@ -1,7 +1,9 @@
 #ifndef MOS6502_EXECUTE_HPP
 #define MOS6502_EXECUTE_HPP
-#include <thread>
 #include <chrono>
+#include <concepts>
+#include <cstdint>
+#include <thread>
 
 #include <mos6502/cpu.hpp>
 #include <mos6502/memory.hpp>
@@ -30,11 +32,16 @@ auto execute_next_opcode(
   return table[read_opcode(cpu, mem)](cpu, mem);
 }
 
+template <typename T>
+concept Predicate = requires(T t) {
+  { t() } -> std::same_as<bool>;
+};
+
 /// Calls code_block(); at a frequency of HZ in loop. Fn signature is bool fn();
 /** If code_block returns true, this function will return. */
 template <
-  int HZ,
-  typename Fn,
+  std::uint32_t HZ,
+  Predicate Fn,
   typename Clock_t = std::chrono::high_resolution_clock
 >
 auto timed_execute(

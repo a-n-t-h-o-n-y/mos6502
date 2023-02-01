@@ -4,6 +4,8 @@ add_executable(mos6502_tests
   cpu.test.cpp
   instructions.test.cpp
   opcodes.test.cpp
+  klaus2m5.test.cpp
+  bcd.test.cpp
 )
 
 target_link_libraries(mos6502_tests PRIVATE

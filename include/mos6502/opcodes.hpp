@@ -70,7 +70,7 @@ auto create_opcode_table() -> OpTable<M>
 
   // SBC
   t[0xE9] = [](CPU& c, M& m) {
-    SBC(c, m.read(IMM(c, m)));
+    SBC(c, IMM(c, m));
     return 2;
   };
   t[0xE5] = [](CPU& c, M& m) {
@@ -107,7 +107,7 @@ auto create_opcode_table() -> OpTable<M>
 
   // LDA
   t[0xA9] = [](CPU& c, M& m) {
-    LDA(c, m.read(IMM(c, m)));
+    LDA(c, IMM(c, m));
     return 2;
   };
   t[0xA5] = [](CPU& c, M& m) {
@@ -137,14 +137,14 @@ auto create_opcode_table() -> OpTable<M>
     return 6;
   };
   t[0xB1] = [](CPU& c, M& m) {
-    auto const [extra, addr] = ABX(c, m);
+    auto const [extra, addr] = IZY(c, m);
     LDA(c, m.read(addr));
     return 5 + (extra ? 1 : 0);
   };
 
   // LDX
   t[0xA2] = [](CPU& c, M& m) {
-    LDX(c, m.read(IMM(c, m)));
+    LDX(c, IMM(c, m));
     return 2;
   };
   t[0xA6] = [](CPU& c, M& m) {
@@ -167,7 +167,7 @@ auto create_opcode_table() -> OpTable<M>
 
   // LDY
   t[0xA0] = [](CPU& c, M& m) {
-    LDY(c, m.read(IMM(c, m)));
+    LDY(c, IMM(c, m));
     return 2;
   };
   t[0xA4] = [](CPU& c, M& m) {

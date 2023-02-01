@@ -422,16 +422,8 @@ auto JSR(
   Address to
 ) -> void
 {
-  detail::stack_push(
-    cpu,
-    mem,
-    static_cast<Byte>((cpu.PC >> 8) & 0x00FF)
-  );
-  detail::stack_push(
-    cpu,
-    mem,
-    static_cast<Byte>(cpu.PC & 0x00FF)
-  );
+  cpu.PC--;
+  detail::push_PC(cpu, mem);
   JMP(cpu, to);
 }
 
@@ -441,7 +433,7 @@ auto RTS(
   Memory auto const& mem
 ) -> void
 {
-  cpu.PC = detail::pull_PC(cpu, mem);
+  cpu.PC = detail::pull_PC(cpu, mem) + 1;
 }
 
 
@@ -466,8 +458,8 @@ auto RTI(
   // Pull SR
   PLP(cpu, mem);
 
-  // Pull PC
-  RTS(cpu, mem);
+  // Pull PC - Don't use RTS
+  cpu.PC = detail::pull_PC(cpu, mem);
 }
 
 

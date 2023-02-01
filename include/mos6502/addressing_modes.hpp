@@ -85,8 +85,9 @@ auto IZX(
 ) -> Address
 {
   Address const adr = memory.read(cpu.PC++) + cpu.X;
-  Address const lo  = memory.read(adr);
-  Address const hi  = memory.read(adr + 1);
+  // Wraps Around on Byte Boundary
+  Address const lo  = memory.read(adr & 0x00FF);
+  Address const hi  = memory.read((adr + 1) & 0x00FF);
   return (hi << 8) | lo;
 }
 

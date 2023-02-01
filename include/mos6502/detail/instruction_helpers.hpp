@@ -73,6 +73,33 @@ auto stack_push(
   cpu.SP -= 1;
 }
 
+/// Push the PC onto the stack.
+inline
+auto push_PC(
+  CPU& cpu,
+  Memory auto& mem
+) -> void
+{
+  auto const previous = cpu.PC;
+
+  Byte const hi = Byte((previous >> 8) & 0x00FF);
+  Byte const lo = Byte(previous & 0x00FF);
+  stack_push(cpu, mem, hi);
+  stack_push(cpu, mem, lo);
+}
+
+/// Pull the PC off the stack.
+[[nodiscard]] inline
+auto pull_PC(
+  CPU& cpu,
+  Memory auto const& mem
+) -> Address
+{
+  Byte const lo = stack_pull(cpu, mem);
+  Byte const hi = stack_pull(cpu, mem);
+  return (hi << 8) | lo;
+}
+
 /// Shift Left One Bit. Carry is set to MSB before shift.
 inline
 auto ASL(
@@ -102,7 +129,7 @@ auto LSR(
   set_flag(
     cpu.SR,
     Flag::C,
-    val & 0x01
+    static_cast<bool>(val & 0x01)
   );
   Byte const r = val >> 1;
   set_flag_N(cpu, r);
@@ -135,6 +162,7 @@ auto ROR(
   Byte const c = get_flag(cpu.SR, Flag::C);
   Byte const r = Byte(LSR(cpu, val) | (c << 7));
   set_flag_N(cpu, r);
+  set_flag_Z(cpu, r);
   return r;
 }
 
@@ -194,10 +222,7 @@ auto interrupt(
 ) -> void
 {
   // PC
-  Byte const hi = Byte((cpu.PC >> 8) & 0x00FF);
-  Byte const lo = Byte(cpu.PC & 0x00FF);
-  stack_push(cpu, mem, hi);
-  stack_push(cpu, mem, lo);
+  push_PC(cpu, mem);
 
   // Status Register
   Byte status = cpu.SR;
@@ -212,16 +237,36 @@ auto interrupt(
   cpu.PC = read_address(mem, to);
 }
 
-/// Pull the PC off the stack.
-[[nodiscard]] inline
-auto pull_PC(
+/// ADC instruction for binary values only, not BCD.
+inline
+auto ADC_BIN(
   CPU& cpu,
-  Memory auto const& mem
-) -> Address
+  Byte value
+) -> void
 {
-  Byte const lo = stack_pull(cpu, mem);
-  Byte const hi = stack_pull(cpu, mem);
-  return (hi << 8) | lo;
+  Word const r = static_cast<Word>(
+    cpu.AC + value + static_cast<Word>(get_flag(cpu.SR, Flag::C)));
+
+  // Carry Flag
+  detail::set_flag_C(cpu, r);
+
+  // Zero Flag
+  detail::set_flag_Z(cpu, static_cast<Byte>(r));
+
+  // Signed Overflow Flag
+  set_flag(
+    cpu.SR,
+    Flag::V,
+    static_cast<bool>((
+      ~(static_cast<Word>(cpu.AC) ^ static_cast<Word>(value)) &
+       (static_cast<Word>(cpu.AC) ^ static_cast<Word>(r))
+    ) & 0x0080)
+  );
+
+  // Negative Flag
+  detail::set_flag_N(cpu, static_cast<Byte>(r));
+
+  cpu.AC = static_cast<Byte>(r);
 }
 
 }  // namespace mos6502::detail
