@@ -21,16 +21,22 @@ Features:
 #include <mos6502/opcodes.hpp>
 #include <mos6502/execute.hpp>
 
-ByteArray      mem   = load_binary("a_rom.bin");
-constexpr auto table = create_opcode_table<ByteArray>();
+using namespace mos6502;
 
-auto cpu = CPU{};
-cpu.PC   = 0x0400;
+int main() {
 
-auto prev = -1;
-while (true) {
-  if (prev == cpu.PC) { break; }
-  prev = cpu.PC;
-  execute_next_opcode(table, cpu, mem); // This returns # of cycles used.
+  ByteArray  mem   = load_binary("a_rom.bin");
+  auto const table = create_opcode_table<ByteArray>();
+
+  auto cpu = CPU{};
+  cpu.PC   = 0x0400;
+
+  auto prev = -1;
+  while (prev != cpu.PC) {
+    prev = cpu.PC;
+    execute_next_opcode(table, cpu, mem); // Returns # of cycles used.
+  }
+
+  return 0;
 }
 ```
